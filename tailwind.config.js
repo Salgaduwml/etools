@@ -15,6 +15,7 @@ module.exports = {
       colors: {
         "light-blue-400": "#08B1BC",
         "light-blue-500": "#079CA6",
+        "brand-dark-400": "#0A3858",
       },
     },
   },
