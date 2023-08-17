@@ -1,8 +1,12 @@
+"use client";
+import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { RxHamburgerMenu } from "react-icons/rx";
+import { GrClose } from "react-icons/gr";
 import { BiMath } from "react-icons/bi";
 import { IoAnalytics } from "react-icons/io";
+import MobileNav from "./MobileNav";
 
 const tools = [
   {
@@ -38,6 +42,7 @@ const tools = [
 ];
 
 const Navbar = () => {
+  const [isMobile, setIsMobile] = useState(false);
   return (
     <>
       <nav className="w-full px-4 py-4">
@@ -48,7 +53,7 @@ const Navbar = () => {
             src={"/etools-logo.png"}
             alt="etools logo"
           />
-          <div>
+          <div className="hidden">
             <ul className="flex items-center gap-10">
               <li>
                 <Link href="#">Home</Link>
@@ -61,7 +66,7 @@ const Navbar = () => {
               </li>
             </ul>
           </div>
-          <div className="w-[320px] hidden sm:block">
+          <div className="w-[320px] hidden md:block">
             <form>
               <div class="relative">
                 <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
@@ -97,10 +102,18 @@ const Navbar = () => {
               </div>
             </form>
           </div>
-          <RxHamburgerMenu size={24} className="sm:hidden" />
+          {isMobile ? (
+            <GrClose size={24} onClick={() => setIsMobile(false)} />
+          ) : (
+            <RxHamburgerMenu
+              size={24}
+              className="md:hidden"
+              onClick={() => setIsMobile(true)}
+            />
+          )}
         </div>
       </nav>
-      <div className="w-full  border bottom-1 top-1 px-4 py-3 bg-brand-dark-400 text-white">
+      <div className="w-full  border bottom-1 top-1 px-4 py-3 bg-brand-dark-400 text-white hidden md:block">
         <div className="max-w-7xl mx-auto flex items-center justify-start gap-10">
           {tools.map((tool, i) => (
             <Link
@@ -109,11 +122,12 @@ const Navbar = () => {
               className="flex items-center gap-3 hover:text-light-blue-400 active:text-light-blue-400"
             >
               {tool.icon}
-              {tool.name} Tools
+              {tool.name}
             </Link>
           ))}
         </div>
       </div>
+      {isMobile && <MobileNav tools={tools} />}
     </>
   );
 };
