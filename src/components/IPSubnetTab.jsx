@@ -1,5 +1,8 @@
 "use client";
+import Link from "next/link";
 import React, { useState } from "react";
+import { LiaDropbox, LiaGoogleDrive } from "react-icons/lia";
+import { AiOutlineCloudDownload } from "react-icons/ai";
 
 const IPSubnetTab = () => {
   const [tab, setTab] = useState(1);
@@ -113,7 +116,54 @@ const IPSubnetTab = () => {
             </div>
           </div>
         )}
-        {tab === 2 && <div>Tab 2</div>}
+        {tab === 2 && (
+          <div className="w-full md:w-1/2">
+            <label
+              className="block mb-2 text-sm font-medium text-gray-900"
+              htmlFor="file_input"
+            >
+              Upload .csv file
+            </label>
+            <input
+              className="block w-full file:mr-3 file:bg-black file:text-white file:p-2 file:border-0 text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50"
+              aria-describedby="file_input_help"
+              id="file_input"
+              type="file"
+            ></input>
+            <div className="flex items-center gap-6 mt-6">
+              <span>Or</span>
+              <Link href={"/"} className="flex gap-2 text-sm text-gray-600">
+                <LiaDropbox size={20} />
+                from DropBox
+              </Link>
+              <Link href={"/"} className="flex gap-2 text-sm text-gray-600">
+                <LiaGoogleDrive size={20} />
+                from Google Drive
+              </Link>
+            </div>
+            <div className="flex flex-wrap items-center gap-6 mt-8">
+              <button
+                type="submit"
+                className="bg-brand-dark-400 text-white py-2 px-6 rounded-md"
+              >
+                Calculate
+              </button>
+              <button
+                type="submit"
+                className="border border-brand-dark-400 text-brand-dark-400 py-2 px-6 rounded-md"
+              >
+                Preview
+              </button>
+              <button
+                type="submit"
+                className="flex items-center gap-2 font-semibold text-brand-dark-400 rounded-md"
+              >
+                <AiOutlineCloudDownload size={20} />
+                Download
+              </button>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
