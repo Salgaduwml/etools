@@ -5,11 +5,13 @@ import Link from "next/link";
 import { RxHamburgerMenu } from "react-icons/rx";
 import { GrClose } from "react-icons/gr";
 import MobileNav from "./MobileNav";
+import { usePathname } from "next/navigation";
 
 import { tools } from "@/Tools";
 
 const Navbar = () => {
   const [isMobile, setIsMobile] = useState(false);
+  const pathName = usePathname();
   return (
     <>
       <nav className="w-full py-4">
@@ -20,16 +22,39 @@ const Navbar = () => {
             src={"/etools-logo.png"}
             alt="etools logo"
           />
-          <div className="hidden">
+          <div className="hidden md:block">
             <ul className="flex items-center gap-10">
               <li>
-                <Link href="#">Home</Link>
+                <Link
+                  href="/"
+                  className={`${
+                    pathName === "/" ? "text-light-blue-400" : "text-black"
+                  }`}
+                >
+                  Home
+                </Link>
               </li>
               <li>
-                <Link href="#">About</Link>
+                <Link
+                  href="/about"
+                  className={`${
+                    pathName === "/about" ? "text-light-blue-400" : "text-black"
+                  }`}
+                >
+                  About
+                </Link>
               </li>
               <li>
-                <Link href="#">Contact</Link>
+                <Link
+                  href="/contact"
+                  className={`${
+                    pathName === "/contact"
+                      ? "text-light-blue-400"
+                      : "text-black"
+                  }`}
+                >
+                  Contact
+                </Link>
               </li>
             </ul>
           </div>
@@ -86,7 +111,9 @@ const Navbar = () => {
             <Link
               href={tool.url}
               key={i}
-              className="flex items-center gap-3 hover:text-light-blue-400"
+              className={`flex items-center gap-3 hover:text-light-blue-400 ${
+                pathName === tool.url ? "text-light-blue-400" : "text-white"
+              }`}
             >
               {tool.icon}
               {tool.name}
