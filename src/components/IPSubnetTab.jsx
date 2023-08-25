@@ -6,6 +6,63 @@ import { AiOutlineCloudDownload } from "react-icons/ai";
 
 const IPSubnetTab = () => {
   const [tab, setTab] = useState(1);
+  // Single Entry
+  const [ipAddress, setIpAddress] = useState("");
+  const [subnet, setSubnet] = useState("");
+  const [ipVersion, setIpVersion] = useState("ipv4");
+  // Multile Entry
+  const [file, setFile] = useState(null);
+  // Result
+  const [result, setResult] = useState(null);
+
+  const handleSingleEntry = async (e) => {
+    e.preventDefault();
+    try {
+      const res = await fetch(`http://${base}:${port}/calc_ip_address`, {
+        method: "POST",
+        headers: {
+          "Content-type": "application/json",
+        },
+        body: JSON.stringify({ ipAddress, subnet, ipVersion }),
+      });
+      if (res.ok) {
+        setResult(res.json());
+      } else {
+        throw new Error("Failed to get a response from form submission.");
+      }
+    } catch (error) {
+      console.log(error);
+    }
+    setIpAddress("");
+    setSubnet("");
+    setIpVersion("ipv4");
+  };
+
+  const handleMultipleEntry = async (e) => {
+    e.preventDefault();
+    const formData = new FormData();
+    formData.append("file", file);
+    try {
+      const res = await fetch(
+        `http://${base}:${port}/calc_batch_csv_ip_address`,
+        {
+          method: "POST",
+          headers: {
+            "Content-type": "multipart/form-data",
+          },
+          body: formData,
+        }
+      );
+      if (res.ok) {
+        setResult(res.json());
+      } else {
+        throw new Error("Failed to get a response from form submission.");
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   return (
     <div className="mt-6">
       <div className="flex items-center gap-6">
@@ -29,7 +86,7 @@ const IPSubnetTab = () => {
       <div className="mt-10">
         {tab === 1 && (
           <div className="flex flex-col md:flex-row gap-12">
-            <form className="w-full">
+            <form className="w-full" onSubmit={handleSingleEntry}>
               <div className="mb-6">
                 <label
                   htmlFor="ipAddress"
@@ -42,6 +99,8 @@ const IPSubnetTab = () => {
                   id="ipAddress"
                   className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
                   placeholder="ex: 27.78.101.132"
+                  value={ipAddress}
+                  onChange={(e) => setIpAddress(e.target.value)}
                   required
                 />
               </div>
@@ -57,6 +116,8 @@ const IPSubnetTab = () => {
                   id="subnet"
                   className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
                   placeholder="ex: 255.255.255.255/32"
+                  value={subnet}
+                  onChange={(e) => setSubnet(e.target.value)}
                   required
                 />
               </div>
@@ -66,7 +127,14 @@ const IPSubnetTab = () => {
                 </legend>
                 <div className="flex gap-6">
                   <div className="flex items-center gap-2">
-                    <input type="radio" id="ipv4" name="IPVersion" />
+                    <input
+                      type="radio"
+                      id="ipv4"
+                      name="IPVersion"
+                      value="ipv4"
+                      onChange={(e) => setIpVersion(e.target.value)}
+                      checked={ipVersion === "ipv4"}
+                    />
                     <label
                       htmlFor="ipv4"
                       className="text-sm font-medium text-gray-900"
@@ -75,7 +143,14 @@ const IPSubnetTab = () => {
                     </label>
                   </div>
                   <div className="flex items-center gap-2">
-                    <input type="radio" id="ipv6" name="IPVersion" />
+                    <input
+                      type="radio"
+                      id="ipv6"
+                      name="IPVersion"
+                      value="ipv6"
+                      onChange={(e) => setIpVersion(e.target.value)}
+                      checked={ipVersion === "ipv6"}
+                    />
                     <label
                       htmlFor="ipv6"
                       className="text-sm font-medium text-gray-900"
@@ -118,50 +193,53 @@ const IPSubnetTab = () => {
         )}
         {tab === 2 && (
           <div className="w-full md:w-1/2">
-            <label
-              className="block mb-2 text-sm font-medium text-gray-900"
-              htmlFor="file_input"
-            >
-              Upload .csv file
-            </label>
-            <input
-              className="block w-full file:mr-3 file:bg-black file:text-white file:p-2 file:border-0 text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50"
-              aria-describedby="file_input_help"
-              id="file_input"
-              type="file"
-            ></input>
-            <div className="flex items-center gap-6 mt-6">
-              <span>Or</span>
-              <Link href={"/"} className="flex gap-2 text-sm text-gray-600">
-                <LiaDropbox size={20} />
-                from DropBox
-              </Link>
-              <Link href={"/"} className="flex gap-2 text-sm text-gray-600">
-                <LiaGoogleDrive size={20} />
-                from Google Drive
-              </Link>
-            </div>
-            <div className="flex flex-wrap items-center gap-6 mt-8">
-              <button
-                type="submit"
-                className="bg-brand-dark-400 text-white py-2 px-6 rounded-md"
+            <form action="" onSubmit={handleMultipleEntry}>
+              <label
+                className="block mb-2 text-sm font-medium text-gray-900"
+                htmlFor="file_input"
               >
-                Calculate
-              </button>
-              <button
-                type="submit"
-                className="border border-brand-dark-400 text-brand-dark-400 py-2 px-6 rounded-md"
-              >
-                Preview
-              </button>
-              <button
-                type="submit"
-                className="flex items-center gap-2 font-semibold text-brand-dark-400 rounded-md"
-              >
-                <AiOutlineCloudDownload size={20} />
-                Download
-              </button>
-            </div>
+                Upload .csv file
+              </label>
+              <input
+                className="block w-full file:mr-3 file:bg-black file:text-white file:p-2 file:border-0 text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50"
+                aria-describedby="file_input_help"
+                id="file_input"
+                type="file"
+                onChange={(e) => setFile(e.target.files[0])}
+              ></input>
+              <div className="flex items-center gap-6 mt-6">
+                <span>Or</span>
+                <Link href={"/"} className="flex gap-2 text-sm text-gray-600">
+                  <LiaDropbox size={20} />
+                  from DropBox
+                </Link>
+                <Link href={"/"} className="flex gap-2 text-sm text-gray-600">
+                  <LiaGoogleDrive size={20} />
+                  from Google Drive
+                </Link>
+              </div>
+              <div className="flex flex-wrap items-center gap-6 mt-8">
+                <button
+                  type="submit"
+                  className="bg-brand-dark-400 text-white py-2 px-6 rounded-md"
+                >
+                  Calculate
+                </button>
+                <button
+                  type="button"
+                  className="border border-brand-dark-400 text-brand-dark-400 py-2 px-6 rounded-md"
+                >
+                  Preview
+                </button>
+                <button
+                  type="button"
+                  className="flex items-center gap-2 font-semibold text-brand-dark-400 rounded-md"
+                >
+                  <AiOutlineCloudDownload size={20} />
+                  Download
+                </button>
+              </div>
+            </form>
           </div>
         )}
       </div>
